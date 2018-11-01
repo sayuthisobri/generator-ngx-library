@@ -7,6 +7,7 @@ const yosay = require('yosay');
 const mkdirp = require('mkdirp');
 const exec = require('child_process').exec;
 const path = require('path');
+const del = require('del');
 const _ = require('lodash');
 
 const prompts = require('./prompts');
@@ -75,6 +76,13 @@ module.exports = class extends Generator {
       defaults: false
     });
 
+    // This adds support for a `--del-excluded-files` flag
+    this.option('del-excluded-files', {
+      description: 'Delete files that have been excluded if found in the filesystem',
+      type: Boolean,
+      defaults: true
+    });
+
     // This adds support for a `--npm` flag
     this.option('npm', {
       description: 'Use npm instead of yarn',
@@ -89,6 +97,7 @@ module.exports = class extends Generator {
     this.skipTravis = this.options.skipTravis;
     this.skipCoveralls = this.options.skipCoveralls;
     this.skipGhReleasing = this.options.skipGhReleasing;
+    this.delExcludedFiles = this.options.delExcludedFiles;
 
     this.skipDemo = this.options.skipDemo;
     this.skipCache = this.options.skipCache;
@@ -205,6 +214,15 @@ module.exports = class extends Generator {
           this.ngDevDependencies.push('"typescript" : "2.4.2"');
           this.ngDevDependencies.push('"awesome-typescript-loader" : "3.3.0"'); // Because it depends on 'typescript'
           this.ngDevDependencies.push('"codelyzer" : "4.0.0"');
+        } else if (this.ngVersionMin === 6) {
+          this.ngDevDependencies.push('"@angular/compiler-cli" : "6.0.0"');
+          this.ngDevDependencies.push('"zone.js" : "0.8.26"');
+          this.ngDevDependencies.push('"rxjs" : "6.0.0"');
+          this.ngDevDependencies.push('"tslint" : "5.7.0"');
+          this.ngDevDependencies.push('"gulp-tslint" : "8.1.3"'); // Because it depends on 'tslint'
+          this.ngDevDependencies.push('"typescript" : "2.7.2"');
+          this.ngDevDependencies.push('"awesome-typescript-loader" : "5.0.0"'); // Because it depends on 'typescript'
+          this.ngDevDependencies.push('"codelyzer" : "4.2.1"');
         }
 
         if (this.ngModules.indexOf('animations') === -1) {
@@ -250,8 +268,9 @@ module.exports = class extends Generator {
       }
 
       if (this.skipDemo) {
-        this.exclusions.push('demo/e2e/app.e2e-spec.ts');
-        this.exclusions.push('demo/e2e/app.po.ts');
+        this.exclusions.push('demo/e2e/src/app.e2e-spec.ts');
+        this.exclusions.push('demo/e2e/src/app.po.ts');
+        this.exclusions.push('demo/e2e/protractor.conf.js');
         this.exclusions.push('demo/e2e/tsconfig.e2e.json');
         this.exclusions.push('demo/src/app/getting-started/getting-started.component.ts');
         this.exclusions.push('demo/src/app/getting-started/getting-started-routing.module.ts');
@@ -296,8 +315,10 @@ module.exports = class extends Generator {
         this.exclusions.push('demo/src/testing/router-stubs.ts');
         this.exclusions.push('demo/src/index.html');
         this.exclusions.push('demo/src/_variables.scss');
+        this.exclusions.push('demo/src/browserslist');
         this.exclusions.push('demo/src/favicon.ico');
         this.exclusions.push('demo/src/hmr.ts');
+        this.exclusions.push('demo/src/karma.conf.js');
         this.exclusions.push('demo/src/main.server.ts');
         this.exclusions.push('demo/src/main.ts');
         this.exclusions.push('demo/src/polyfills.ts');
@@ -311,14 +332,12 @@ module.exports = class extends Generator {
         this.exclusions.push('demo/src/tsconfig.server.json');
         this.exclusions.push('demo/src/tsconfig.spec.json');
         this.exclusions.push('demo/src/typings.d.ts');
-        this.exclusions.push('demo/.angular-cli.json');
+        this.exclusions.push('demo/angular.json');
         this.exclusions.push('demo/package.json');
         this.exclusions.push('demo/README.md');
         this.exclusions.push('demo/.editorconfig');
         this.exclusions.push('demo/.gitignore');
-        this.exclusions.push('demo/karma.conf.js');
         this.exclusions.push('demo/prerender.ts');
-        this.exclusions.push('demo/protractor.conf.js');
         this.exclusions.push('demo/proxy.conf.json');
         this.exclusions.push('demo/server.ts');
         this.exclusions.push('demo/static.paths.ts');
@@ -379,7 +398,7 @@ module.exports = class extends Generator {
       // Set up Greenkeeper's excluded packages
       this.setUpGreenkeeperExclusions();
 
-      // Set upGenerator's excluded files
+      // Set up Generator's excluded files
       this.setUpGeneratorExclusions();
     };
 
@@ -396,6 +415,7 @@ module.exports = class extends Generator {
     this.ngVersion = this.config.get('ngVersion');
     this.ngModules = this.config.get('ngModules');
     this.otherDependencies = this.config.get('otherDependencies') || [];
+    this.additionalPackageFiles = this.config.get('additionalPackageFiles') || [];
     this.dependenciesRange = this.config.get('dependenciesRange') || '^';
     this.useGreenkeeper = this.config.get('useGreenkeeper');
     this.useCompodoc = this.config.get('useCompodoc');
@@ -406,7 +426,9 @@ module.exports = class extends Generator {
     this.skipTravis = this.config.get('skipTravis') || this.skipTravis;
     this.skipCoveralls = this.config.get('skipCoveralls') || this.skipCoveralls;
     this.skipGhReleasing = this.config.get('skipGhReleasing') || this.skipGhReleasing;
+    this.delExcludedFiles = this.config.get('delExcludedFiles') || this.delExcludedFiles;
     this.exclusions = this.config.get('exclusions') || [];
+    this.deleteExclusions = this.config.get('deleteExclusions') || [];
 
     if (this.fs.exists('.yo-rc.json') && !this.skipCache) {
       this.log(chalk.green('This is an existing project, using the configuration from your .yo-rc.json file to re-generate it...\n'));
@@ -421,23 +443,34 @@ module.exports = class extends Generator {
         this.projectName = props.projectName;
         this.projectVersion = props.projectVersion;
         this.projectDescription = props.projectDescription;
-        this.projectKeywords = props.projectKeywords ? props.projectKeywords.split(',') : [];
+        this.projectKeywords = props.projectKeywords ? props.projectKeywords.split(/, */) : [];
         this.ngVersion = props.ngVersion;
         this.ngModules = props.ngModules;
-        this.otherDependencies = props.otherDependencies ? props.otherDependencies.split(',') : [];
+        this.otherDependencies = props.otherDependencies ? props.otherDependencies.split(/, */) : [];
+        this.additionalPackageFiles = props.additionalPackageFiles ? props.additionalPackageFiles.split(/, */) : [];
         this.ngPrefix = props.ngPrefix;
         this.testingFramework = props.testingFramework;
         this.useGreenkeeper = props.useGreenkeeper;
         this.useCompodoc = props.useCompodoc;
         this.enforceNgGitCommitMsg = props.enforceNgGitCommitMsg;
 
+        init();
+
         // Filter ngModules
-        if (this.ngVersion === '2.0.0' && this.ngModules.indexOf('animations') !== -1) {
+        if (this.ngVersionMin < 4 && this.ngModules.indexOf('animations') !== -1) {
           this.warning(`Module 'animations' is only available for angular v4+. Removing it.`);
           _.remove(this.ngModules, ngModule => ngModule === 'animations');
         }
 
-        init();
+        if (this.ngVersionMin < 5 && (this.ngModules.indexOf('bazel') !== -1 || this.ngModules.indexOf('service-worker') !== -1)) {
+          this.warning(`Modules 'bazel', 'service-worker' are only available for angular v5+. Removing them.`);
+          _.remove(this.ngModules, ngModule => ngModule === 'bazel' || ngModule === 'service-worker');
+        }
+
+        if (this.ngVersionMin < 6 && this.ngModules.indexOf('elements') !== -1) {
+          this.warning(`Module 'elements' is only available for angular v6+. Removing it.`);
+          _.remove(this.ngModules, ngModule => ngModule === 'elements');
+        }
 
         // Save config
         this.config.set('version', this.pkg.version);
@@ -452,6 +485,7 @@ module.exports = class extends Generator {
         this.config.set('ngVersion', this.ngVersion);
         this.config.set('ngModules', this.ngModules);
         this.config.set('otherDependencies', this.otherDependencies);
+        this.config.set('additionalPackageFiles', this.additionalPackageFiles);
         this.config.set('dependenciesRange', this.dependenciesRange);
         this.config.set('ngPrefix', this.ngPrefix);
         this.config.set('testingFramework', this.testingFramework);
@@ -464,7 +498,9 @@ module.exports = class extends Generator {
         this.config.set('skipTravis', this.skipTravis);
         this.config.set('skipCoveralls', this.skipCoveralls);
         this.config.set('skipGhReleasing', this.skipGhReleasing);
+        this.config.set('delExcludedFiles', this.delExcludedFiles);
         this.config.set('exclusions', this.exclusions);
+        this.config.set('deleteExclusions', this.deleteExclusions);
 
         done();
       });
@@ -472,13 +508,18 @@ module.exports = class extends Generator {
   }
 
   writing() {
-    // Initializes files that will be excluded
-    let excluder = new ExcludeParser(this.exclusions, this.destinationRoot());
+    // Initializes files that will be excluded/ deleted from fs
+    let generateExcluder = new ExcludeParser(this.exclusions, this.destinationRoot());
+    let deleteExcluder = new ExcludeParser(this.deleteExclusions, this.destinationRoot());
 
+    let filesToDelete = [];
     // Write files
     files.forEach(file => {
-      if (excluder.isExcluded(file.path)) {
-        this.log(`${chalk.yellow('Excluded')} ${file.path}`);
+      if (generateExcluder.isExcluded(file.path)) {
+        this.log(`${chalk.bold.yellow('excluded')} ${file.path}`);
+        if (!deleteExcluder.isExcluded(file.path)) {
+          filesToDelete.push(path.join(this.destinationRoot(), file.path));
+        }
       } else if (file.isTpl) {
         this.fs.copyTpl(this.templatePath(file.name), this.destinationPath(file.path), this);
       } else {
@@ -488,6 +529,16 @@ module.exports = class extends Generator {
 
     // Write folders (empty are not created by 'mem-fs-editor' by default)
     folders.forEach(folder => mkdirp(folder));
+
+    // Delete excluded files that have been found in the file system
+    if (this.delExcludedFiles && filesToDelete.length) {
+      del(filesToDelete).then(paths => {
+        if (paths.length) {
+          this.log(`${chalk.red(`The following excluded files have been deleted from your file system ['del-excluded-files' option was true] :\n`)}`);
+          paths.forEach(path => this.log(`${chalk.bold.red('deleted')} ${path}`));
+        }
+      });
+    }
   }
 
   install() {

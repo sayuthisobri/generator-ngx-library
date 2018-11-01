@@ -24,7 +24,10 @@ Here are live examples of some Angular libraries developed with the generator:
 * [ngx-wow](https://github.com/tinesoft/ngx-wow) (:innocent:)
 * [ngx-disqus](https://github.com/murhafsousli/ngx-disqus/)
 * [ngx-slideshow](https://github.com/WireFlare/ngx-slideshow)
+* [ngx-auth-firebaseui](https://github.com/AnthonyNahas/ngx-auth-firebaseui)
+* [ngx-material-pages](https://github.com/AnthonyNahas/ngx-material-pages)
 * [ng2-avatar](https://github.com/snics/ng2-avatar)
+* [dejajs-components](https://github.com/DSI-HUG/dejajs-components)
 
 These are some that [i know of](https://github.com/search?q=generator-ngx-library+filename%3A.yo-rc.json+path%3A%2F&type=Code&utf8=%E2%9C%93). Want your project listed here ? Drop me a line.
 
@@ -46,7 +49,8 @@ These are the main features of the generator:
 * **Enforcing of Angular Git Commit Message Guideline** with [Commitplease](https://github.com/jzaefferer/commitplease) :speech_balloon:
 * **Publication** to [npm registry](https://npmjs.org)
 * **Releasing** to [Github](https://help.github.com/articles/about-releases/) :octocat:
-* Support for Angular 2.x.x, 4.x.x and now **5.x.x**!
+* Support for **scoped packages** (eg: @mycompany/mylibrary)
+* Support for Angular from 2.x.x all the way up to **6.x.x**!
 * and so much more out-of-the-box :package:!
 
 # TL; DR :)
@@ -88,6 +92,7 @@ If you find next sections way too long, here is a quick summary for you:
 - [Enforcing angular-style commit messages](#enforcing-angular-style--commit-messages)
 - [Pre-Releasing :checkered_flag:](#pre-releasing-checkered_flag)
 - [Releasing](#releasing)
+- [Troubleshooting](#troubleshooting)
 - [Support](#support)
 - [License](#license)
 
@@ -144,6 +149,7 @@ skip-sample  | skips the generation of the sample library
 skip-travis  | skips the integration with Travis CI
 skip-coveralls  | skips the integration with Coveralls (code coverage)
 skip-gh-releasing  | skips the releasing of the library on Github
+del-excluded-files  | deletes excluded files that have been found in the file system (from previous generation for example)
 npm          | forces usage of `npm` to install dependencies
 
 # Overall Directory Structure
@@ -194,6 +200,9 @@ my-ngx-library/
   |  |	|  |- app-rooting.module.ts
   |  |	|- assets/
   |  |	|  |- logo.svg
+  |  |	|- testing/
+  |  |	|  |- index.ts
+  |  |	|  |- router-stubs.ts
   |  |	|- tsconfig.server.json           # for universal (server side rendering)
   |  |- prerender.ts                      # for universal (server side rendering)
   |  |- server.ts                         # for universal (server side rendering)
@@ -207,7 +216,6 @@ my-ngx-library/
   |- LICENSE
   |- package.json
   |- tsconfig.json
-  |- tsconfig-aot.json
   |- tslint.json
   |- webpack.config.js
 ```
@@ -350,7 +358,7 @@ Task                    | Purpose
 >
 > <sup>2</sup> = This task is only available if you chose to use compodoc during generator setup
 
-### Recipes
+### Recipes 🍯
 
 Some useful recipes to help you during the development process can be found [here](recipes/)
 
@@ -426,6 +434,10 @@ The demo application will be available at : `https://USERNAME.github.io/REPO_NAM
 
 The documentation will be available at : `https://USERNAME.github.io/REPO_NAME/doc/` (provided you chose to generate one) or
 at `https://USERNAME.github.io/REPO_NAME/`, if you chose to skip demo application generation.
+
+# Troubleshooting
+
+See most common problems, and how to solve them [here](TROUBLESHOOTING.md).
 
 # Support
 

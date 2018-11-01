@@ -3,6 +3,7 @@
 const path = require('path');
 const assert = require('yeoman-assert');
 const helpers = require('yeoman-test');
+const fs = require('fs-extra');
 
 const createNgLibraryApp = (options, prompts) => {
   return helpers.run(path.join(__dirname, '../app'))
@@ -20,6 +21,7 @@ const createNgLibraryApp = (options, prompts) => {
       testingFramework: 'karma',
       ngVersion: '2.0.0',
       ngModules: ['core', 'common'],
+      additionalPackageFiles: 'styles/*.scss, images/*.(png|jpg)',
       useGreenkeeper: true,
       useCompodoc: false,
       enforceNgGitCommitMsg: true
@@ -64,9 +66,10 @@ describe('ngx-library:app', () => {
           'src/tsconfig.spec.json',
 
           // Create Demo files
-          'demo/e2e/app.e2e-spec.ts',
-          'demo/e2e/app.po.ts',
+          'demo/e2e/src/app.e2e-spec.ts',
+          'demo/e2e/src/app.po.ts',
           'demo/e2e/tsconfig.e2e.json',
+          'demo/e2e/protractor.conf.js',
           'demo/src/app/getting-started/getting-started-routing.module.ts',
           'demo/src/app/getting-started/getting-started.component.ts',
           'demo/src/app/getting-started/getting-started.component.html',
@@ -109,8 +112,10 @@ describe('ngx-library:app', () => {
           'demo/src/testing/router-stubs.ts',
           'demo/src/index.html',
           'demo/src/_variables.scss',
+          'demo/src/browserslist',
           'demo/src/favicon.ico',
           'demo/src/hmr.ts',
+          'demo/src/karma.conf.js',
           'demo/src/main.server.ts',
           'demo/src/main.ts',
           'demo/src/polyfills.ts',
@@ -120,12 +125,10 @@ describe('ngx-library:app', () => {
           'demo/src/tsconfig.spec.json',
           'demo/src/typings.d.ts',
           'demo/package.json',
-          'demo/.angular-cli.json',
+          'demo/angular.json',
           'demo/.editorconfig',
           'demo/.gitignore',
-          'demo/karma.conf.js',
           'demo/prerender.ts',
-          'demo/protractor.conf.js',
           'demo/tsconfig.json',
           'demo/server.ts',
           'demo/tsconfig.json',
@@ -148,6 +151,8 @@ describe('ngx-library:app', () => {
           'config/webpack.test.js',
           'config/gulp-tasks/README.md'
         ]);
+
+        assert.fileContent('gulpfile.js', `      gulp.src(['README.md', 'LICENSE', 'CHANGELOG.md', 'styles/*.scss', 'images/*.(png|jpg)',`);
       });
     });
   });
@@ -171,7 +176,7 @@ describe('ngx-library:app', () => {
           ngPrefix: 'my-lib',
           testingFramework: 'karma',
           ngVersion: '2.0.0',
-          ngModules: ['core', 'common', 'animations'],
+          ngModules: ['core', 'common', 'animations', 'bazel', 'service-worker', 'elements'],
           useGreenkeeper: true,
           useCompodoc: false
         });
@@ -191,7 +196,8 @@ describe('ngx-library:app', () => {
             '"awesome-typescript-loader" : "3.0.5"',
             '"codelyzer" : "1.0.0-beta.0"']);
         assert.noFile([
-          'src/tsconfig.lib.es5.json']);
+          'src/tsconfig.lib.es5.json'
+        ]);
       });
     });
   });
@@ -215,7 +221,7 @@ describe('ngx-library:app', () => {
           ngPrefix: 'my-lib',
           testingFramework: 'karma',
           ngVersion: '4.0.0',
-          ngModules: ['core', 'common', 'animations'],
+          ngModules: ['core', 'common', 'animations', 'bazel', 'service-worker', 'elements'],
           useGreenkeeper: true,
           useCompodoc: false
         });
@@ -235,7 +241,8 @@ describe('ngx-library:app', () => {
             '"awesome-typescript-loader" : "3.0.5"',
             '"codelyzer" : "3.1.1"']);
         assert.file([
-          'src/tsconfig.lib.es5.json']);
+          'src/tsconfig.lib.es5.json'
+        ]);
       });
     });
   });
@@ -259,12 +266,12 @@ describe('ngx-library:app', () => {
           ngPrefix: 'my-lib',
           testingFramework: 'karma',
           ngVersion: '5.0.0',
-          ngModules: ['core', 'common', 'animations'],
+          ngModules: ['core', 'common', 'animations', 'bazel', 'service-worker', 'elements'],
           useGreenkeeper: true,
           useCompodoc: false
         });
       return ngLibraryApp.then(() => {
-        assert.deepEqual(ngLibraryApp.generator.ngModules, ['core', 'common', 'animations']);
+        assert.deepEqual(ngLibraryApp.generator.ngModules, ['core', 'common', 'animations', 'bazel', 'service-worker']);
         assert.deepEqual(ngLibraryApp.generator.ngDevDependencies,
           ['"@angular/compiler" : "5.0.0"',
             '"@angular/platform-server" : "5.0.0"',
@@ -279,7 +286,53 @@ describe('ngx-library:app', () => {
             '"awesome-typescript-loader" : "3.3.0"',
             '"codelyzer" : "4.0.0"']);
         assert.file([
-          'src/tsconfig.lib.es5.json']);
+          'src/tsconfig.lib.es5.json'
+        ]);
+      });
+    });
+  });
+
+  describe('check generation for ng6', () => {
+    it('should have set appropriate properties', () => {
+      let ngLibraryApp = createNgLibraryApp(
+        {
+          skipInstall: true,
+          skipChecks: false
+        },
+        {
+          authorName: 'Awesome Developer',
+          authorEmail: 'awesome.developer@github.com',
+          githubUsername: 'awesomedeveloper',
+          githubRepoName: 'my-ngx-library',
+          projectName: 'my-ngx-library',
+          projectVersion: '1.0.0',
+          projectDescription: 'Angular library for ...',
+          projectkeywords: 'ng, angular,library',
+          ngPrefix: 'my-lib',
+          testingFramework: 'karma',
+          ngVersion: '6.0.0',
+          ngModules: ['core', 'common', 'animations', 'bazel', 'service-worker', 'elements'],
+          useGreenkeeper: true,
+          useCompodoc: false
+        });
+      return ngLibraryApp.then(() => {
+        assert.deepEqual(ngLibraryApp.generator.ngModules, ['core', 'common', 'animations', 'bazel', 'service-worker', 'elements']);
+        assert.deepEqual(ngLibraryApp.generator.ngDevDependencies,
+          ['"@angular/compiler" : "6.0.0"',
+            '"@angular/platform-server" : "6.0.0"',
+            '"@angular/platform-browser" : "6.0.0"',
+            '"@angular/platform-browser-dynamic" : "6.0.0"',
+            '"@angular/compiler-cli" : "6.0.0"',
+            '"zone.js" : "0.8.26"',
+            '"rxjs" : "6.0.0"',
+            '"tslint" : "5.7.0"',
+            '"gulp-tslint" : "8.1.3"',
+            '"typescript" : "2.7.2"',
+            '"awesome-typescript-loader" : "5.0.0"',
+            '"codelyzer" : "4.2.1"']);
+        assert.file([
+          'src/tsconfig.lib.es5.json'
+        ]);
       });
     });
   });
@@ -640,8 +693,9 @@ describe('ngx-library:app', () => {
       return ngLibraryApp.then(() => {
         assert.equal(ngLibraryApp.generator.skipDemo, true);
         assert.noFile([
-          'demo/e2e/app.e2e-spec.ts',
-          'demo/e2e/app.po.ts',
+          'demo/e2e/src/app.e2e-spec.ts',
+          'demo/e2e/src/app.po.ts',
+          'demo/e2e/protractor.conf.js',
           'demo/e2e/tsconfig.e2e.json',
           'demo/src/app/getting-started/getting-started-routing.module.ts',
           'demo/src/app/getting-started/getting-started.component.ts',
@@ -688,8 +742,10 @@ describe('ngx-library:app', () => {
           'demo/src/testing/router-stubs.ts',
           'demo/src/index.html',
           'demo/src/_variables.scss',
+          'demo/src/browserslist',
           'demo/src/favicon.ico',
           'demo/src/hmr.ts',
+          'demo/src/karma.conf.js',
           'demo/src/main.server.ts',
           'demo/src/main.ts',
           'demo/src/polyfills.ts',
@@ -700,12 +756,10 @@ describe('ngx-library:app', () => {
           'demo/src/tsconfig.spec.json',
           'demo/src/typings.d.ts',
           'demo/package.json',
-          'demo/.angular-cli.json',
+          'demo/angular.json',
           'demo/.editorconfig',
           'demo/.gitignore',
-          'demo/karma.conf.js',
           'demo/prerender.ts',
-          'demo/protractor.conf.js',
           'demo/README.md',
           'demo/server.ts',
           'demo/static.paths.ts',
@@ -727,8 +781,9 @@ describe('ngx-library:app', () => {
       return ngLibraryApp.then(() => {
         assert.equal(ngLibraryApp.generator.skipDemo, false);
         assert.file([
-          'demo/e2e/app.e2e-spec.ts',
-          'demo/e2e/app.po.ts',
+          'demo/e2e/src/app.e2e-spec.ts',
+          'demo/e2e/src/app.po.ts',
+          'demo/e2e/protractor.conf.js',
           'demo/e2e/tsconfig.e2e.json',
           'demo/src/app/getting-started/getting-started-routing.module.ts',
           'demo/src/app/getting-started/getting-started.component.ts',
@@ -772,8 +827,9 @@ describe('ngx-library:app', () => {
           'demo/src/testing/router-stubs.ts',
           'demo/src/index.html',
           'demo/src/_variables.scss',
+          'demo/src/browserslist',
           'demo/src/favicon.ico',
-          'demo/src/favicon.ico',
+          'demo/src/karma.conf.js',
           'demo/src/main.server.ts',
           'demo/src/main.ts',
           'demo/src/polyfills.ts',
@@ -784,12 +840,10 @@ describe('ngx-library:app', () => {
           'demo/src/tsconfig.spec.json',
           'demo/src/typings.d.ts',
           'demo/package.json',
-          'demo/.angular-cli.json',
+          'demo/angular.json',
           'demo/.editorconfig',
           'demo/.gitignore',
-          'demo/karma.conf.js',
           'demo/prerender.ts',
-          'demo/protractor.conf.js',
           'demo/README.md',
           'demo/server.ts',
           'demo/static.paths.ts',
@@ -936,6 +990,68 @@ describe('ngx-library:app', () => {
         assert.fileContent('package.json', '    "conventional-github-releaser":');
         assert.fileContent('gulpfile.js', /gulp\.task\('github-release'/);
       });
+    });
+  });
+
+  describe('check "delExcludedFiles" option', () => {
+    it('should not delete excluded files when "delExcludedFiles" is set to false', () => {
+      let ngLibraryApp = createNgLibraryApp({
+        skipInstall: true,
+        skipChecks: true,
+        skipDemo: true,
+        delExcludedFiles: false
+      }).inTmpDir(dir => {// Simulates presence of excluded files (demo)
+        fs.copySync(path.join(__dirname, '../app/templates/demo'), path.join(dir, 'demo'));
+      });
+      return ngLibraryApp.then(() => {
+        assert.equal(ngLibraryApp.generator.delExcludedFiles, false);
+
+        assert.file('demo/src/karma.conf.js');
+        assert.file('demo/tsconfig.json');
+        assert.file('demo/tslint.json');
+      });
+    });
+
+    it('should delete excluded files code when "delExcludedFiles" is set to true', () => {
+      let ngLibraryApp = createNgLibraryApp({
+        skipInstall: true,
+        skipChecks: true,
+        skipDemo: true,
+        delExcludedFiles: true
+      }).inTmpDir(dir => {// Simulates presence of excluded files (demo)
+        fs.copySync(path.join(__dirname, '../app/templates/demo'), path.join(dir, 'demo'));
+      });
+
+      return ngLibraryApp.then(() => {
+        assert.equal(ngLibraryApp.generator.delExcludedFiles, true);
+
+        assert.noFile('demo/src/karma.conf.js');
+        assert.noFile('demo/tsconfig.json');
+        assert.noFile('demo/tslint.json');
+      });
+    });
+  });
+
+  it('should only delete excluded files not in "deleteExclusions" if "delExcludedFiles" set to true and ', () => {
+    let ngLibraryApp = createNgLibraryApp({
+      skipInstall: true,
+      skipChecks: true,
+      skipDemo: true,
+      delExcludedFiles: true
+    }).withLocalConfig({
+      deleteExclusions: ['demo/tsconfig.json', 'demo/tslint.json']
+    }).inTmpDir(dir => {// Simulates presence of excluded files (demo)
+      fs.copySync(path.join(__dirname, '../app/templates/demo'), path.join(dir, 'demo'));
+    });
+    return ngLibraryApp.then(() => {
+      assert.equal(ngLibraryApp.generator.delExcludedFiles, true);
+
+      assert.noFile('demo/src/app/app-routing.module.ts');
+      assert.noFile('demo/src/app/app.component.html');
+      assert.noFile('demo/src/app/app.component.scss');
+
+      assert.file('demo/tsconfig.json');
+      assert.file('demo/tslint.json');
     });
   });
 });

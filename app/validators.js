@@ -4,20 +4,24 @@ const semver = require('semver');
 const _ = require('lodash');
 
 const NG_MODULES_DEPENDENCIES = {
-  'core': ['rxjs', 'zone.js'],
+  'animations': ['core'],
+  'bazel': ['compiler-cli'],
   'common': ['core'],
+  'compiler-cli': ['compiler'],
+  'compiler': ['core'],
+  'core': ['rxjs', 'zone.js'],
+  'elements': ['core', 'platform-browser', 'rxjs'],
   'forms': ['core', 'common'],
   'http': ['core', 'platform-browser', 'rxjs'],
-  'compiler': ['core'],
-  'router': ['core', 'common', 'platform-browser', 'rxjs'],
-  'upgrade': ['core', 'compiler', 'platform-browser', 'platform-browser-dynamic'],
   'language-service': [],
   'platform-browser-dynamic': ['core', 'common', 'compiler', 'platform-browser'],
   'platform-browser': ['core', 'common'],
   'platform-server': ['core', 'common', 'compiler', 'platform-browser'],
   'platform-webworker-dynamic': ['core', 'compiler', 'platform-browser', 'platform-webworker'],
   'platform-webworker': ['core', 'platform-browser'],
-  'animations': ['core']
+  'router': ['core', 'common', 'platform-browser', 'rxjs'],
+  'service-worker': ['core', 'common'],
+  'upgrade': ['core', 'compiler', 'platform-browser', 'platform-browser-dynamic']
 };
 
 module.exports = {
@@ -31,7 +35,7 @@ module.exports = {
   },
 
   validateGithubUsername: input => {
-    return /^[a-zA-Z0-9]+$/.test(input) ? true : 'Your github username cannot contain special characters or a blank space';
+    return /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i.test(input) ? true : 'Your github username cannot contain special characters or a blank space';
   },
 
   validateGithubRepoName: input => {

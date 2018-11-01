@@ -1,3 +1,128 @@
+<a name="6.2.1"></a>
+## [6.2.1](https://github.com/tinesoft/generator-ngx-library/compare/v6.2.0...v6.2.1) (2018-06-17)
+
+
+### Bug Fixes
+
+* **publish:** fix typo with option to publish scoped packages on npm ([a19f054](https://github.com/tinesoft/generator-ngx-library/commit/a19f054))
+
+
+
+<a name="6.2.0"></a>
+# [6.2.0](https://github.com/tinesoft/generator-ngx-library/compare/v6.1.0...v6.2.0) (2018-06-17)
+
+
+### Bug Fixes
+
+* **demo:** correct import path for `_variables.scss` in the main `styles.scss` ([2eb1e27](https://github.com/tinesoft/generator-ngx-library/commit/2eb1e27))
+* **demo:** fix demo app tests (remaining `rxjs<6` code) and misplaced `karma.conf.js` ([b81afd6](https://github.com/tinesoft/generator-ngx-library/commit/b81afd6))
+* **demo:** remove useless dependency on `webpack` (already referenced by CLI) ([892c7d2](https://github.com/tinesoft/generator-ngx-library/commit/892c7d2)), closes [#163](https://github.com/tinesoft/generator-ngx-library/issues/163)
+* **publishing:** add missing npm option to allow publishing scoped packages ([42fc79f](https://github.com/tinesoft/generator-ngx-library/commit/42fc79f))
+
+
+### Features
+
+* **demo:** add button on home page to allow editing demo on `StackBlitz` ([8e19a53](https://github.com/tinesoft/generator-ngx-library/commit/8e19a53))
+* **demo:** improve styling and remove useless `include-media` dependency ([8866231](https://github.com/tinesoft/generator-ngx-library/commit/8866231))
+* **demo:** improve styling and remove useless ìnclude-media` dependency ([822413a](https://github.com/tinesoft/generator-ngx-library/commit/822413a))
+
+
+
+<a name="6.1.0"></a>
+# [6.1.0](https://github.com/tinesoft/generator-ngx-library/compare/v6.0.0...v6.1.0) (2018-05-15)
+
+
+### Bug Fixes
+
+* **core:** fix installation error due to `del` package not being found ([bf1995b](https://github.com/tinesoft/generator-ngx-library/commit/bf1995b))
+
+
+### Features
+
+* **options:** add separate `deleteExclusions` property in `.yo-rc.json` to control which excluded files get deleted or not ([2398ad6](https://github.com/tinesoft/generator-ngx-library/commit/2398ad6))
+
+
+
+<a name="6.0.0"></a>
+# [6.0.0](https://github.com/tinesoft/generator-ngx-library/compare/v5.8.0...v6.0.0) (2018-05-13)
+
+
+### Bug Fixes
+
+* **demo:** fix wrong assets url  on deployed demo app ([744931b](https://github.com/tinesoft/generator-ngx-library/commit/744931b))
+* **jest:** exclude jest test files from compilation of demo app ([c64f34e](https://github.com/tinesoft/generator-ngx-library/commit/c64f34e))
+
+
+### Features
+
+* **core:** add `--del-excluded-files` option to allow deleting excluded files found in file system ([76b776b](https://github.com/tinesoft/generator-ngx-library/commit/76b776b))
+* **dependencies:** update most dependencies (rollup, jest, webpack, etc) ([a490a3a](https://github.com/tinesoft/generator-ngx-library/commit/a490a3a))
+* **ng6:** add support for Angular &  Angular CLI v6 ([ed942e0](https://github.com/tinesoft/generator-ngx-library/commit/ed942e0))
+
+
+### BREAKING CHANGES
+
+* **ng6:** the minimal Node version to run the generator is now **8.x.x** (required by some core ng packages like `compiler-cli@6.x.x`)
+
+
+
+<a name="5.8.0"></a>
+# [5.8.0](https://github.com/tinesoft/generator-ngx-library/compare/v5.7.1...v5.8.0) (2018-04-17)
+
+
+### Bug Fixes
+
+* **tslint:** fix building issue when project's description exceeds 140 chars ([d69807e](https://github.com/tinesoft/generator-ngx-library/commit/d69807e)), closes [#154](https://github.com/tinesoft/generator-ngx-library/issues/154)
+
+
+### Features
+
+* **packaging:** allow packaging of additional files (images, styles,...) ([d1df8dc](https://github.com/tinesoft/generator-ngx-library/commit/d1df8dc))
+* **recipe:** add recipe about how to build multi-modules libraries ([745bd09](https://github.com/tinesoft/generator-ngx-library/commit/745bd09))
+
+
+
+<a name="5.7.1"></a>
+## [5.7.1](https://github.com/tinesoft/generator-ngx-library/compare/v5.7.0...v5.7.1) (2018-03-22)
+
+
+### Bug Fixes
+
+* **module:** add missing dependency when adding `bazel` module ([1dfc011](https://github.com/tinesoft/generator-ngx-library/commit/1dfc011))
+* **module:** add missing dependency when adding `compiler-cli` module ([d640864](https://github.com/tinesoft/generator-ngx-library/commit/d640864))
+
+
+
+<a name="5.7.0"></a>
+# [5.7.0](https://github.com/tinesoft/generator-ngx-library/compare/v5.6.0...v5.7.0) (2018-03-20)
+
+
+### Features
+
+* **demo:** update demo app to Angular CLI `1.7.3` ([68804ba](https://github.com/tinesoft/generator-ngx-library/commit/68804ba))
+* **ngModules:** add 'bazel' and 'service-worker' modules (for ng5+) ([8992724](https://github.com/tinesoft/generator-ngx-library/commit/8992724))
+* **rollup:** update rollup to `v0.57.0` for better perfs ([ca19b0b](https://github.com/tinesoft/generator-ngx-library/commit/ca19b0b))
+
+
+
+<a name="5.6.0"></a>
+# [5.6.0](https://github.com/tinesoft/generator-ngx-library/compare/v5.5.0...v5.6.0) (2018-02-12)
+
+
+### Bug Fixes
+
+* **core:** update github username validation to align with Github validation rules ([26b0e6f](https://github.com/tinesoft/generator-ngx-library/commit/26b0e6f)), closes [#144](https://github.com/tinesoft/generator-ngx-library/issues/144)
+* **jest:** correct gulp's test tasks stopping inclusive sequences when using jest ([1200ea7](https://github.com/tinesoft/generator-ngx-library/commit/1200ea7))
+
+
+### Features
+
+* **demo:** update demo app to Angular CLI `1.6.8`, bootstrap `4.0.0` and ng-bootstrap `1.0.0` ([4e45707](https://github.com/tinesoft/generator-ngx-library/commit/4e45707))
+* **doc:** add a 'Troubleshooting' section to documentation ([21d3ea3](https://github.com/tinesoft/generator-ngx-library/commit/21d3ea3))
+* **umd:** fix external libraries being bundled with main UMD file  and improve related docs ([f25e037](https://github.com/tinesoft/generator-ngx-library/commit/f25e037))
+
+
+
 <a name="5.5.0"></a>
 # [5.5.0](https://github.com/tinesoft/generator-ngx-library/compare/v5.4.0...v5.5.0) (2018-01-12)
 
@@ -146,7 +271,7 @@
 ### Features
 
 * **build:** run initial build on `gulp build:watch` ([e3fa3fd](https://github.com/tinesoft/generator-ngx-library/commit/e3fa3fd))
-* **scopedLibraries:** add support for scoped libraries creation (i.e [@my-scope](https://github.com/my-scope)/my-lib) ([575c744](https://github.com/tinesoft/generator-ngx-library/commit/575c744)), closes [#100](https://github.com/tinesoft/generator-ngx-library/issues/100)
+* **scopedLibraries:** add support for scoped libraries creation (i.e [@my](https://github.com/my)-scope/my-lib) ([575c744](https://github.com/tinesoft/generator-ngx-library/commit/575c744)), closes [#100](https://github.com/tinesoft/generator-ngx-library/issues/100)
 
 
 
@@ -267,7 +392,7 @@
 
 ### Features
 
-* **demo:** update demo application files to `angular/cli@1.3.0` ([da0687f](https://github.com/tinesoft/generator-ngx-library/commit/da0687f))
+* **demo:** update demo application files to `angular/cli[@1](https://github.com/1).3.0` ([da0687f](https://github.com/tinesoft/generator-ngx-library/commit/da0687f))
 * **perf:** add `--build-optimizer` when building demo application (sample app shrinked from `808.55kB` to `587.35kB` ! ) ([894c3e8](https://github.com/tinesoft/generator-ngx-library/commit/894c3e8))
 
 
